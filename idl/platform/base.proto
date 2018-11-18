@@ -1,0 +1,14 @@
+syntax="proto3";
+package base;
+
+enum Code {
+    SUCCEED = 0;
+    FAILED = 1;
+    ENCODE_FAILED = 2;
+    DECODE_FAILED = 3;
+}
+
+message Resp {
+    uint32 Code = 1;
+    string Desc = 2;
+}

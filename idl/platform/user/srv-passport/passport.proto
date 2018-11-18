@@ -1,0 +1,144 @@
+syntax="proto3";
+
+package platform.user.srv.passport;
+
+import "idl/platform/base.proto";
+
+service Passport{
+    // 注册
+    rpc SignUp(SignUpReq) returns (SignUpResp);
+
+    // 登陆
+    rpc MobileSignIn(MobileSignInReq) returns (MobileSignInResp);
+    rpc EmailSignIn(EmailSignInReq) returns (EmailSignInResp);
+    rpc UserNameSignIn(UserNameSignInReq) returns (UserNameSignInResp);
+    rpc TokenSignIn(TokenSignInReq) returns (TokenSignInResp);
+
+    // 登出
+    rpc SignOut(SignOutReq) returns (SignOutResp);
+
+    // 修改/重置密码
+    rpc ChangePassword(ChangePasswordReq) returns (ChangePasswordResp);
+    rpc ResetPassword(ResetPasswordReq) returns (ResetPasswordResp);
+
+    // 绑定/解绑手机
+    rpc BindMobile(BindMobileReq) returns (BindMobileResp);
+    rpc UnbindMobile(UnbindMobileReq) returns (UnbindMobileResp);
+}
+
+message SignUpReq {
+    int64 DeviceID = 1;
+    string Mobile = 2;
+    string Email = 3;
+    string Password = 4;
+    string Code = 5;
+    int32 ActiveType = 6;
+    int32 AppID = 7;
+    string version = 8;
+    string ExtraInfo = 9;
+}
+
+message SignUpResp {
+    int64 UserID = 1;
+    string Mobile = 2;
+    base.Resp BaseResp = 3;
+}
+
+message MobileSignInReq {
+    string Mobile = 1;
+    string Password = 2;
+    int32 AppID = 3;
+    string ExtraInfo = 4;
+}
+
+message MobileSignInResp {
+    int64 UserID = 1;
+    base.Resp BaseResp = 2;
+}
+
+message EmailSignInReq {
+    string Email = 1;
+    string Password = 2;
+    int32 AppID = 3;
+    string ExtraInfo = 4;
+}
+message EmailSignInResp {
+    int64 UserID = 1;
+    base.Resp BaseResp = 2;
+}
+
+message UserNameSignInReq {
+    string UserName = 1;
+    string Password = 2;
+    int32 AppID = 3;
+    string ExtraInfo = 4;
+}
+
+message UserNameSignInResp {
+    int64 UserID = 1;
+    base.Resp BaseResp = 2;
+}
+
+message TokenSignInReq {
+    int64 DeviceID = 1;
+    string Token = 2;
+    string Mobile = 3;
+    int32 AppID = 4;
+    string ExtraInfo = 5;
+}
+
+message TokenSignInResp {
+    int64 UserID = 1;
+    base.Resp BaseResp = 2;
+}
+
+message SignOutReq{
+    int64 UserID = 1;
+}
+
+message SignOutResp{
+    base.Resp BaseResp = 1;
+}
+
+message ChangePasswordReq {
+    int64 UserID = 1;
+    int32 AppID = 2;
+    string OldPassword = 3;
+    string Password = 4;
+    string ExtraInfo = 5;
+}
+
+message ChangePasswordResp {
+    base.Resp BaseResp = 1;
+}
+
+message ResetPasswordReq {
+    int64 UserID = 1;
+    int32 AppID = 2;
+    string Mobile = 3;
+    string Code = 4;
+    string Password = 5;
+    string ExtraInfo = 6;
+}
+
+message ResetPasswordResp {
+    int64 UserID = 1;
+    string Mobile = 2;
+    base.Resp BaseResp = 3;
+}
+
+message BindMobileReq {
+
+}
+
+message BindMobileResp {
+
+}
+
+message UnbindMobileReq {
+
+}
+
+message UnbindMobileResp {
+
+}

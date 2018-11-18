@@ -1,0 +1,7 @@
+syntax="proto3";
+
+package platform.user.srv.info;
+
+service UserInfo {
+    rpc 
+}
