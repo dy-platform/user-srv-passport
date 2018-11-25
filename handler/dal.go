@@ -1,6 +1,20 @@
 package handler
 
+import (
+	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
+)
 
+//var (
+//	DefaultDB
+//)
+
+func init() {
+	db, err := gorm.Open("mysql", "test.db")
+	if err != nil {
+
+	}
+}
 
 func signUpByMobile(mobile, password, email string, deviceID int32, appID int32) error {
 	// 1. 查找所有该手机号相关的记录
@@ -10,12 +24,8 @@ func signUpByMobile(mobile, password, email string, deviceID int32, appID int32)
 	// 5. 更改用户的密码
 	// 6. 写日志
 
-	//TODO 获取一个 odinID 作为userID
 
-	userID := 1
-	logrus.Infof("[odin.UserAuth]mobile:%s, deviceID:%d, uid:%d, appID:%d", mobile, deviceID, userID, appID)
 
-	//TODO 生成一个密码 MakePassword(password)
 
 
 }

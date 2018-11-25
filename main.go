@@ -1,15 +1,24 @@
 package main
 
 import (
-	"github.com/dayan-be/demo-service/logic"
-	"github.com/dy-platform/user-srv-info/handler"
-	"github.com/dayan-be/demo-service/proto/demo"
-	"github.com/dayan-be/kit"
+	"github.com/dy-platform/user-srv-passport/dal/db"
+	"github.com/dy-platform/user-srv-passport/handler"
+	"github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
+	"github.com/dy-gopkg/kit"
+	"github.com/dy-platform/user-srv-passport/util/config"
 )
 
 func main() {
 	kit.Init()
-	demo.RegisterSayHandler(kit.DefaultService.Server(),&logic.Handle{})
+
+	// 初始化业务配置
+	uconfig.InitBusinessConfig()
+
+	// 初始化数据库
+	db.DBInit()
+	cache.CacheInit()
+
+	platform_user_srv_passport.RegisterPassportHandler(kit.DefaultService.Server(), &handler.Handle{})
 
 	kit.Run()
 }

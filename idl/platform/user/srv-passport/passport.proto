@@ -2,7 +2,7 @@ syntax="proto3";
 
 package platform.user.srv.passport;
 
-import "idl/platform/base.proto";
+import "../base.proto";
 
 service Passport{
     // 注册

@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"errors"
 	"github.com/dy-gopkg/util/format"
 	srv "github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
+	"github.com/dy-ss/crypto/password"
 	"github.com/sirupsen/logrus"
 	"context"
+	"github.com/jinzhu/gorm"
 )
 
 type Handler struct {
@@ -19,17 +20,27 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 		return err
 	}
 
-	if !format.IsDigit(req.Code) {
-		logrus.Debugf("bad code %v", req.Code)
-		return errors.New("bad code")
-	}
+	// 检验手机号是否已被注册
+
+
+	// TODO 后期再验证短信验证码
+	//if !format.IsDigit(req.Code) {
+	//	logrus.Debugf("bad code %v", req.Code)
+	//	return errors.New("bad code")
+	//}
 
 	if err = format.Password(req.Password); err != nil {
 		logrus.Debugf("bad password. %v", err)
 		return err
 	}
 
-	// TODO 监测 短信验证码
+	// TODO  后期再检测短信验证码
+
+	// 生成密码
+	passwd, salt := password.Make([]byte(req.Password))
+
+
+
 
 
 	return nil
