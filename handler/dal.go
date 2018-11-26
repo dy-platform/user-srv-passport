@@ -1,20 +1,20 @@
 package handler
 
-import (
-	"github.com/jinzhu/gorm"
-	"github.com/sirupsen/logrus"
-)
+//import (
+//	"github.com/jinzhu/gorm"
+//	"github.com/sirupsen/logrus"
+//)
 
 //var (
 //	DefaultDB
 //)
 
-func init() {
-	db, err := gorm.Open("mysql", "test.db")
-	if err != nil {
-
-	}
-}
+//func init() {
+//	db, err := gorm.Open("mysql", "test.db")
+//	if err != nil {
+//
+//	}
+//}
 
 func signUpByMobile(mobile, password, email string, deviceID int32, appID int32) error {
 	// 1. 查找所有该手机号相关的记录
@@ -26,6 +26,6 @@ func signUpByMobile(mobile, password, email string, deviceID int32, appID int32)
 
 
 
-
+	return nil
 
 }

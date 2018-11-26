@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"github.com/dy-gopkg/kit"
 	"github.com/dy-gopkg/util/format"
+	"github.com/dy-platform/user-srv-passport/dal/db"
+	"github.com/dy-platform/user-srv-passport/idl"
+	snowflake "github.com/dy-platform/user-srv-passport/idl/platform/id/srv-snowflake"
 	srv "github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
 	"github.com/dy-ss/crypto/password"
 	"github.com/sirupsen/logrus"
 	"context"
-	"github.com/jinzhu/gorm"
 )
 
 type Handler struct {
@@ -34,15 +37,36 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 		return err
 	}
 
-	// TODO  后期再检测短信验证码
-
 	// 生成密码
 	passwd, salt := password.Make([]byte(req.Password))
 
+	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
+	idReq := &snowflake.GetIDReq{Num:1}
+	idRsp, err := cl.GetID(ctx, idReq)
+	if err != nil {
+		logrus.Warnf("platform.id.srv.snowflake GetID error: %v", err)
+		rsp.BaseResp = &base.Resp{Code:uint32(base.CODE_SERVICE_EXCEPTION)}
+		return nil
+	}
 
+	ua := db.UserAuth{
+		Uid:idRsp.IDs[0],
+		Name:         req.Name,
+		Mobile:       mobile,
+		Email:        req.Email,
+		Password:     string(passwd),
+		Salt:         string(salt),
+		UserStatus:   0,
+		AppID:        req.AppID,
+		WechatOpenID: "",
+		QQOpenID:     "",
+		WeiboOpenID:  "",
+	}
+	db.UpdateUserAuth(&ua)
 
-
-
+	rsp.UserID = idRsp.IDs[0]
+	rsp.Mobile = mobile
+	rsp.BaseResp = &base.Resp{Code:uint32(base.CODE_SUCESS)}
 	return nil
 }
 

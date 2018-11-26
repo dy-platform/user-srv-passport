@@ -16,9 +16,11 @@ func main() {
 
 	// 初始化数据库
 	db.DBInit()
-	cache.CacheInit()
 
-	platform_user_srv_passport.RegisterPassportHandler(kit.DefaultService.Server(), &handler.Handle{})
+	//TODO 初始化缓存
+	//cache.CacheInit()
+
+	platform_user_srv_passport.RegisterPassportHandler(kit.DefaultService.Server(), &handler.Handler{})
 
 	kit.Run()
 }
