@@ -1,21 +1,28 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/apex/log"
 	"github.com/dy-gopkg/kit"
 	"github.com/dy-gopkg/util/format"
 	"github.com/dy-platform/user-srv-passport/dal/db"
 	"github.com/dy-platform/user-srv-passport/idl"
 	snowflake "github.com/dy-platform/user-srv-passport/idl/platform/id/srv-snowflake"
 	srv "github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
+	"github.com/dy-platform/user-srv-passport/util/config"
 	"github.com/dy-ss/crypto/password"
 	"github.com/sirupsen/logrus"
 	"context"
+	"io/ioutil"
+	"net/http"
 )
 
 type Handler struct {
 
 }
 
+// 注册
 func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignUpResp) error {
 	mobile, err := format.Mobile(req.Mobile)
 	if err != nil {
@@ -40,36 +47,90 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	// 生成密码
 	passwd, salt := password.Make([]byte(req.Password))
 
+	// 产生一个UID
 	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
 	idReq := &snowflake.GetIDReq{Num:1}
 	idRsp, err := cl.GetID(ctx, idReq)
 	if err != nil {
 		logrus.Warnf("platform.id.srv.snowflake GetID error: %v", err)
-		rsp.BaseResp = &base.Resp{Code:uint32(base.CODE_SERVICE_EXCEPTION)}
+		rsp.BaseResp = &base.Resp{Code:int32(base.CODE_SERVICE_EXCEPTION)}
 		return nil
 	}
 
-	ua := db.UserAuth{
-		Uid:idRsp.IDs[0],
-		Name:         req.Name,
-		Mobile:       mobile,
-		Email:        req.Email,
-		Password:     string(passwd),
-		Salt:         string(salt),
-		UserStatus:   0,
-		AppID:        req.AppID,
-		WechatOpenID: "",
-		QQOpenID:     "",
-		WeiboOpenID:  "",
+	// 插入一条用户通行证信息
+	err = db.InsertOneUserPassport(req.DeviceID, idRsp.IDs[0], req.Name, string(passwd), string(salt), mobile, req.Email, "")
+	if err != nil {
+		logrus.Warnf("db.InsertOneUserPassport error:%v", err)
+		rsp.BaseResp = &base.Resp{
+			Code:                 int32(base.CODE_DATA_EXCEPTION),
+			Desc:                 err.Error(),
+		}
+		return nil
 	}
-	db.UpdateUserAuth(&ua)
 
 	rsp.UserID = idRsp.IDs[0]
 	rsp.Mobile = mobile
-	rsp.BaseResp = &base.Resp{Code:uint32(base.CODE_SUCESS)}
+	rsp.BaseResp = &base.Resp{Code:int32(base.CODE_OK)}
 	return nil
 }
 
+type WeChatOpenCode2SessionResp struct {
+	OpenID string `json:"openid"`
+	SessionKey string `json:"session_key"`
+	UnionID string `json:"unionid"`
+	ErrCode int `json:"errcode"`
+	ErrMsg string `json:"errmsg"`
+}
+
+// 微信登陆
+func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rsp *srv.WeChatSignInResp) error {
+	rsp.BaseResp = &base.Resp{
+		Code:int32(base.CODE_OK),
+	}
+
+	if len(req.AppID) == 0 || len(req.Secret) == 0 || len(req.Code) == 0 {
+		log.Warnf("invalid parameter")
+		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
+		rsp.BaseResp.Desc = "invalid parameter"
+		return nil
+	}
+
+	reqStr := fmt.Sprintf("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+		uconfig.DefaultWeChatOpenURL, req.AppID, req.Secret, req.Code)
+	resp1, err := http.Get(reqStr)
+	if err != nil {
+		log.Warnf("get %s error. %s", reqStr, err)
+		rsp.BaseResp.Code = int32(base.CODE_SERVICE_EXCEPTION)
+		rsp.BaseResp.Desc = "service exception"
+		return nil
+	}
+	defer resp1.Body.Close()
+
+	body, err := ioutil.ReadAll(resp1.Body)
+	if err != nil {
+		logrus.Warnf("read body from resp error. %s", err)
+		rsp.BaseResp.Code = int32(base.CODE_DATA_EXCEPTION)
+		rsp.BaseResp.Desc = "data exception"
+		return nil
+	}
+
+	jsonResp := &WeChatOpenCode2SessionResp{}
+	err = json.Unmarshal(body, jsonResp)
+
+	if jsonResp.ErrCode != 0 {
+		logrus.Warnf("request wechat open api return errcode:%d", jsonResp.ErrCode)
+		rsp.BaseResp.Code = int32(base.CODE_FAILED)
+		return nil
+	}
+
+	u, err := db.GetPassportByWeChatID(jsonResp.UnionID)
+	if err != nil {
+
+	}
+	return nil
+}
+
+// 登陆
 func (h *Handler) MobileSignIn(ctx context.Context, req *srv.MobileSignInReq, rsp *srv.MobileSignInResp) error {
 
 	return nil

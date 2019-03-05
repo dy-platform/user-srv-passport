@@ -11,11 +11,11 @@ import (
 func main() {
 	kit.Init()
 
-	// 初始化业务配置
-	uconfig.InitBusinessConfig()
+	// 初始化配置
+	uconfig.Init()
 
 	// 初始化数据库
-	db.DBInit()
+	db.Init()
 
 	//TODO 初始化缓存
 	//cache.CacheInit()
