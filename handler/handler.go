@@ -47,7 +47,7 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	passwd, salt := password.Make([]byte(req.Password))
 
 	// 产生一个UID
-	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
+	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.Client())
 	idReq := &snowflake.GetIDReq{Num: 1}
 	idRsp, err := cl.GetID(ctx, idReq)
 	if err != nil {
@@ -94,8 +94,16 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		return nil
 	}
 
+	secret, ok := uconfig.DefaultWeChatOpenConf.Secrets[req.AppID]
+	if !ok {
+		logrus.Warnf("invalid appid")
+		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
+		rsp.BaseResp.Msg = "invalid parameter"
+		return
+	}
+
 	reqStr := fmt.Sprintf("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		uconfig.DefaultWeChatOpenURL, req.AppID, req.Secret, req.Code)
+		uconfig.DefaultWeChatOpenConf.URL, req.AppID, secret, req.Code)
 	resp1, err := http.Get(reqStr)
 	if err != nil {
 		logrus.Warnf("get %s error. %s", reqStr, err)
@@ -127,7 +135,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		// 没有找到
 		if err == mgo.ErrNotFound {
 			// 请求一个uid
-			cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
+			cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.Client())
 			idReq := &snowflake.GetIDReq{Num: 1}
 			idRsp, err := cl.GetID(ctx, idReq)
 			if err != nil {

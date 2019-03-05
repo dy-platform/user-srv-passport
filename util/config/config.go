@@ -7,17 +7,23 @@ import (
 
 type (
 	MongoDBConfig struct {
-		Addr []string
-		Username string
-		Password string
-		PoolLimit int
+		Addr []string `json:"addr"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+		PoolLimit int `json:"poolLimit"`
 	}
+
+	WeChatOpenConfig struct {
+		URL string `json:"url""`
+		Secrets map[string]string `json:"secrets"`
+	}
+
 
 )
 
 var (
 	DefaultMgoConf MongoDBConfig
-	DefaultWeChatOpenURL string
+	DefaultWeChatOpenConf WeChatOpenConfig
 )
 
 func Init() {
@@ -31,9 +37,13 @@ func Init() {
 		logrus.Fatalf("invalid mgo addr")
 	}
 
-
-	DefaultWeChatOpenURL = config.Get("wechatOpenURL").String("https://api.weixin.qq.com/sns/jscode2session")
-	if len(DefaultWeChatOpenURL) == 0 {
-		logrus.Fatalf("wechatOpenURL is empty")
+	err = config.Get("wechatOpenConfig").Scan(&DefaultWeChatOpenConf)
+	if len(DefaultWeChatOpenConf.URL) == 0 {
+		DefaultWeChatOpenConf.URL = "https://api.weixin.qq.com/sns/jscode2session"
 	}
+
+	if len(DefaultWeChatOpenConf.Secrets) == 0 {
+		logrus.Fatal("wechat secrets is empty")
+	}
+
 }
