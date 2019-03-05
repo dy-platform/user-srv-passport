@@ -1,6 +1,8 @@
 # This is how we want to name the binary output
 OUTPUT=user-srv-passport
 
+SHELL=C:/Windows/System32/cmd.exe
+
 # These are the values we want to pass for Version and BuildTime
 GITTAG=`git describe --tags`
 BUILD_TIME=`date +%FT%T%z`
@@ -9,14 +11,14 @@ BUILD_TIME=`date +%FT%T%z`
 # LDFLAGS=-ldflags "-X main.GitTag=${GITTAG} -X main.BuildTime=${BUILD_TIME}"
 LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME}"
 
-.PHONY:all clean release idl
+.PHONY:all clean release
 all:clean release
 
 clean:
 	rm -f ${OUTPUT}
 
 release:
-	go build ${LDFLAGS} -o ${OUTPUT} main.go
+	go build ${LDFLAGS}  main.go
 
 
 

@@ -1,7 +1,7 @@
 package uconfig
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/micro/go-config"
 )
 

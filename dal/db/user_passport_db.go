@@ -2,7 +2,7 @@ package db
 
 import (
 	"errors"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/dy-platform/user-srv-passport/util/config"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -104,7 +104,7 @@ func GetPassportByWeChatID(weChatID string) (*UserPassport, error) {
 
 	if ses == nil {
 		//logrus.Warnf("mgo session is nil")
-		return 0, errors.New("mgo session is nil")
+		return nil, errors.New("mgo session is nil")
 	}
 	ret := &UserPassport{}
 	err := ses.DB(DBUserPassport).C(CUserPassport).Find(query).One(ret)

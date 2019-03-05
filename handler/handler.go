@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/apex/log"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/dy-gopkg/kit"
 	"github.com/dy-gopkg/util/format"
 	"github.com/dy-platform/user-srv-passport/dal/db"
@@ -13,13 +16,10 @@ import (
 	"github.com/dy-platform/user-srv-passport/util/config"
 	"github.com/dy-ss/crypto/password"
 	"github.com/sirupsen/logrus"
-	"context"
-	"io/ioutil"
-	"net/http"
+	"gopkg.in/mgo.v2"
 )
 
 type Handler struct {
-
 }
 
 // 注册
@@ -31,7 +31,6 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	}
 
 	// 检验手机号是否已被注册
-
 
 	// TODO 后期再验证短信验证码
 	//if !format.IsDigit(req.Code) {
@@ -49,11 +48,11 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 
 	// 产生一个UID
 	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
-	idReq := &snowflake.GetIDReq{Num:1}
+	idReq := &snowflake.GetIDReq{Num: 1}
 	idRsp, err := cl.GetID(ctx, idReq)
 	if err != nil {
 		logrus.Warnf("platform.id.srv.snowflake GetID error: %v", err)
-		rsp.BaseResp = &base.Resp{Code:int32(base.CODE_SERVICE_EXCEPTION)}
+		rsp.BaseResp = &base.Resp{Code: int32(base.CODE_SERVICE_EXCEPTION)}
 		return nil
 	}
 
@@ -62,36 +61,36 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	if err != nil {
 		logrus.Warnf("db.InsertOneUserPassport error:%v", err)
 		rsp.BaseResp = &base.Resp{
-			Code:                 int32(base.CODE_DATA_EXCEPTION),
-			Desc:                 err.Error(),
+			Code: int32(base.CODE_DATA_EXCEPTION),
+			Msg:  err.Error(),
 		}
 		return nil
 	}
 
 	rsp.UserID = idRsp.IDs[0]
 	rsp.Mobile = mobile
-	rsp.BaseResp = &base.Resp{Code:int32(base.CODE_OK)}
+	rsp.BaseResp = &base.Resp{Code: int32(base.CODE_OK)}
 	return nil
 }
 
 type WeChatOpenCode2SessionResp struct {
-	OpenID string `json:"openid"`
+	OpenID     string `json:"openid"`
 	SessionKey string `json:"session_key"`
-	UnionID string `json:"unionid"`
-	ErrCode int `json:"errcode"`
-	ErrMsg string `json:"errmsg"`
+	UnionID    string `json:"unionid"`
+	ErrCode    int    `json:"errcode"`
+	ErrMsg     string `json:"errmsg"`
 }
 
 // 微信登陆
 func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rsp *srv.WeChatSignInResp) error {
 	rsp.BaseResp = &base.Resp{
-		Code:int32(base.CODE_OK),
+		Code: int32(base.CODE_OK),
 	}
 
 	if len(req.AppID) == 0 || len(req.Secret) == 0 || len(req.Code) == 0 {
-		log.Warnf("invalid parameter")
+		logrus.Warnf("invalid parameter")
 		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
-		rsp.BaseResp.Desc = "invalid parameter"
+		rsp.BaseResp.Msg = "invalid parameter"
 		return nil
 	}
 
@@ -99,9 +98,9 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		uconfig.DefaultWeChatOpenURL, req.AppID, req.Secret, req.Code)
 	resp1, err := http.Get(reqStr)
 	if err != nil {
-		log.Warnf("get %s error. %s", reqStr, err)
+		logrus.Warnf("get %s error. %s", reqStr, err)
 		rsp.BaseResp.Code = int32(base.CODE_SERVICE_EXCEPTION)
-		rsp.BaseResp.Desc = "service exception"
+		rsp.BaseResp.Msg = "service exception"
 		return nil
 	}
 	defer resp1.Body.Close()
@@ -110,7 +109,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 	if err != nil {
 		logrus.Warnf("read body from resp error. %s", err)
 		rsp.BaseResp.Code = int32(base.CODE_DATA_EXCEPTION)
-		rsp.BaseResp.Desc = "data exception"
+		rsp.BaseResp.Msg = "data exception"
 		return nil
 	}
 
@@ -125,8 +124,39 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 
 	u, err := db.GetPassportByWeChatID(jsonResp.UnionID)
 	if err != nil {
+		// 没有找到
+		if err == mgo.ErrNotFound {
+			// 请求一个uid
+			cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.DefaultService.Client())
+			idReq := &snowflake.GetIDReq{Num: 1}
+			idRsp, err := cl.GetID(ctx, idReq)
+			if err != nil {
+				logrus.Warnf("platform.id.srv.snowflake GetID error: %v", err)
+				rsp.BaseResp = &base.Resp{Code: int32(base.CODE_SERVICE_EXCEPTION)}
+				return nil
+			}
 
+			u.UID = idRsp.IDs[0]
+			// 插入一条用户通行证信息
+			err = db.InsertOneUserPassport(req.DeviceID, idRsp.IDs[0], "", "", "", "", "", jsonResp.UnionID)
+			if err != nil {
+				logrus.Warnf("db.InsertOneUserPassport error:%v", err)
+				rsp.BaseResp = &base.Resp{
+					Code: int32(base.CODE_DATA_EXCEPTION),
+					Msg:  err.Error(),
+				}
+				return nil
+			}
+		} else {
+			logrus.Warnf("mgo error:%v", err)
+			rsp.BaseResp.Code = int32(base.CODE_FAILED)
+			rsp.BaseResp.Msg = err.Error()
+			return nil
+		}
 	}
+
+	rsp.UserID = u.UID
+
 	return nil
 }
 
@@ -160,7 +190,6 @@ func (h *Handler) ChangePassword(ctx context.Context, req *srv.ChangePasswordReq
 
 	return nil
 }
-
 
 func (h *Handler) ResetPassword(ctx context.Context, req *srv.ResetPasswordReq, rsp *srv.ResetPasswordResp) error {
 
