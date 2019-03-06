@@ -6,6 +6,7 @@ import (
 	"github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
 	"github.com/dy-gopkg/kit"
 	"github.com/dy-platform/user-srv-passport/util/config"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -20,7 +21,10 @@ func main() {
 	//TODO 初始化缓存
 	//cache.CacheInit()
 
-	platform_user_srv_passport.RegisterPassportHandler(kit.DefaultService.Server(), &handler.Handler{})
+	err := platform_user_srv_passport.RegisterPassportHandler(kit.DefaultService.Server(), &handler.Handler{})
+	if err != nil {
+		logrus.Fatalf("RegisterPassportHandler error:%v", err)
+	}
 
 	kit.Run()
 }
