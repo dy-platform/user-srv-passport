@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/dy-gopkg/kit"
+	"github.com/dy-gopkg/kit/micro"
 	"github.com/dy-gopkg/util/format"
 	"github.com/dy-platform/user-srv-passport/dal/db"
 	"github.com/dy-platform/user-srv-passport/idl"
@@ -47,7 +47,7 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	passwd, salt := password.Make([]byte(req.Password))
 
 	// 产生一个UID
-	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.Client())
+	cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", micro.Client())
 	idReq := &snowflake.GetIDReq{Num: 1}
 	idRsp, err := cl.GetID(ctx, idReq)
 	if err != nil {
@@ -99,7 +99,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		logrus.Warnf("invalid appid")
 		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
 		rsp.BaseResp.Msg = "invalid parameter"
-		return
+		return nil
 	}
 
 	reqStr := fmt.Sprintf("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
@@ -135,7 +135,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		// 没有找到
 		if err == mgo.ErrNotFound {
 			// 请求一个uid
-			cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", kit.Client())
+			cl := snowflake.NewSnowFlakeService("platform.id.srv.snowflake", micro.Client())
 			idReq := &snowflake.GetIDReq{Num: 1}
 			idRsp, err := cl.GetID(ctx, idReq)
 			if err != nil {
