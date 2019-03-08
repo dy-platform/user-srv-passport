@@ -161,6 +161,7 @@ github.com/dy-gopkg/kit v0.0.0-20190305071224-09d7ea9cbb65 h1:mYnaI7jBlWBGt5GyaS
 github.com/dy-gopkg/kit v0.0.0-20190305071224-09d7ea9cbb65/go.mod h1:1QzwuqR33vXSMnR/UGi9cvFqa+/+KfxFXTKGjna5wmk=
 github.com/dy-gopkg/kit v0.0.0-20190308061109-6d2b587a8522 h1:mooUDuLRW+fA3RheueNAZlJVkF1iqo4V8B/MoC9w354=
 github.com/dy-gopkg/kit v0.0.0-20190308061109-6d2b587a8522/go.mod h1:6Ut8jENQf2shMtgB2O24BDqW+YISkOLLcWitZCc6sGo=
+github.com/dy-gopkg/kit v0.0.0-20190308065601-5e4873830d77/go.mod h1:6Ut8jENQf2shMtgB2O24BDqW+YISkOLLcWitZCc6sGo=
 github.com/dy-gopkg/util v0.0.0-20181118154236-9eea955a58a9 h1:LM9INEo2YK7J4dWO7GNVN+UfZaaqurIrRkVvarupuUg=
 github.com/dy-gopkg/util v0.0.0-20181118154236-9eea955a58a9/go.mod h1:FwgpG7rmKX9UrMOIyRswQ0kvVfVJkQK4pzLvPBUjw1w=
 github.com/dy-ss/crypto v0.0.0-20181125084711-8c378e325420 h1:u2wzvOF48KeLKJV0u9ZH2A/auX5jNcHI1dCPBHxp6t0=

@@ -1,7 +1,7 @@
 module github.com/dy-platform/user-srv-passport
 
 require (
-	github.com/dy-gopkg/kit v0.0.0-20190308061109-6d2b587a8522
+	github.com/dy-gopkg/kit v0.0.0-20190308065601-5e4873830d77
 	github.com/dy-gopkg/util v0.0.0-20181118154236-9eea955a58a9
 	github.com/dy-ss/crypto v0.0.0-20181125084711-8c378e325420
 	github.com/golang/protobuf v1.3.0
