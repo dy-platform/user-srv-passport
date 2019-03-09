@@ -11,7 +11,7 @@ LDFLAGS=-ldflags "-X main.BuildTime=${BUILD_TIME}"
 
 .PHONY:all clean release
 
-all:
+release:
 	rm -f ${OUTPUT} && go build ${LDFLAGS} -o ${OUTPUT} main.go
 
 clean:

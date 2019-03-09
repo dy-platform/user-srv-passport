@@ -157,10 +157,7 @@ github.com/duosecurity/duo_api_golang v0.0.0-20190107154727-539434bf0d45 h1:AbIf
 github.com/duosecurity/duo_api_golang v0.0.0-20190107154727-539434bf0d45/go.mod h1:UqXY1lYT/ERa4OEAywUqdok1T4RCRdArkhic1Opuavo=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
-github.com/dy-gopkg/kit v0.0.0-20190305071224-09d7ea9cbb65 h1:mYnaI7jBlWBGt5GyaSO/gWDnO15CJ/TO9Qfm/npETYY=
-github.com/dy-gopkg/kit v0.0.0-20190305071224-09d7ea9cbb65/go.mod h1:1QzwuqR33vXSMnR/UGi9cvFqa+/+KfxFXTKGjna5wmk=
-github.com/dy-gopkg/kit v0.0.0-20190308061109-6d2b587a8522 h1:mooUDuLRW+fA3RheueNAZlJVkF1iqo4V8B/MoC9w354=
-github.com/dy-gopkg/kit v0.0.0-20190308061109-6d2b587a8522/go.mod h1:6Ut8jENQf2shMtgB2O24BDqW+YISkOLLcWitZCc6sGo=
+github.com/dy-gopkg/kit v0.0.0-20190308065601-5e4873830d77 h1:FZ3D1xPCP+LIe4V7Z+jcI/QVUEtkxmrwlkhy9Wry1Zw=
 github.com/dy-gopkg/kit v0.0.0-20190308065601-5e4873830d77/go.mod h1:6Ut8jENQf2shMtgB2O24BDqW+YISkOLLcWitZCc6sGo=
 github.com/dy-gopkg/util v0.0.0-20181118154236-9eea955a58a9 h1:LM9INEo2YK7J4dWO7GNVN+UfZaaqurIrRkVvarupuUg=
 github.com/dy-gopkg/util v0.0.0-20181118154236-9eea955a58a9/go.mod h1:FwgpG7rmKX9UrMOIyRswQ0kvVfVJkQK4pzLvPBUjw1w=
@@ -472,8 +469,6 @@ github.com/michaelklishin/rabbit-hole v1.5.0/go.mod h1:vvI1uOitYZi0O5HEGXhaWC1XT
 github.com/micro/cli v0.0.0-20181223203424-1b0c9793c300/go.mod h1:x9x6qy+tXv17jzYWQup462+j3SIUgDa6vVTzU4IXy/w=
 github.com/micro/cli v0.1.0 h1:5DT+QdbAPPQvB3gYTgwze7tFO1m+7DU1sz9XfQczbsc=
 github.com/micro/cli v0.1.0/go.mod h1:jRT9gmfVKWSS6pkKcXQ8YhUyj6bzwxK8Fp5b0Y7qNnk=
-github.com/micro/go-config v0.14.0 h1:US2/IWZBV1tkLiNLLKzkOxEIWpcSx3UgcRNR3j0rGC0=
-github.com/micro/go-config v0.14.0/go.mod h1:ijvLjvxxfDdlH5vO36ZBrzMVGpiGysuwFotX9F84cag=
 github.com/micro/go-config v1.0.0 h1:XPOyFVNqk6Fq9yZ/LwGjm9xFeGkiQ7vfAXUoPJE4/ZU=
 github.com/micro/go-config v1.0.0/go.mod h1:ijvLjvxxfDdlH5vO36ZBrzMVGpiGysuwFotX9F84cag=
 github.com/micro/go-log v0.1.0 h1:szYSR+yyTsomZM2jyinJC5562DlqffSjHmTZFaeZ2vY=
@@ -482,8 +477,6 @@ github.com/micro/go-micro v0.23.0/go.mod h1:3z3lfMkNU9Sr1L/CxL++8pVJmQapRo0N6kNj
 github.com/micro/go-micro v0.24.0/go.mod h1:G/2AWGXaoz2RoiT8xNNzE9Jn46MAI3GiRvSw6QsCDwI=
 github.com/micro/go-micro v0.26.0/go.mod h1:CweCFO/pq8dCSIOdzVZ4ooIpUrKlyJ0AcFB269M7PgU=
 github.com/micro/go-micro v0.26.1/go.mod h1:Jgc5gPEmDiG1TWE5Qnzzx5qyXnU9VTXKT1FkXkfvt8g=
-github.com/micro/go-micro v0.27.0 h1:gy/eH36omg2QMLFrBqY+GloSwFbtmrv+ajua3oX0LVY=
-github.com/micro/go-micro v0.27.0/go.mod h1:DnwIb4pb7podyAgAF8HYMlDkV5sjtcIj9wW4Iq+JyIk=
 github.com/micro/go-micro v1.0.0 h1:mg5/BfG4O6LHm+BlzNSaKBVxm/nVg0hJ4t7ziNDhipM=
 github.com/micro/go-micro v1.0.0/go.mod h1:DnwIb4pb7podyAgAF8HYMlDkV5sjtcIj9wW4Iq+JyIk=
 github.com/micro/go-rcache v0.1.0/go.mod h1:INzyZjXO5M+PmN2A33YxD4TaOY61xjFIM4CfSHv+At8=

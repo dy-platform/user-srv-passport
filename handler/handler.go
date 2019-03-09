@@ -13,7 +13,7 @@ import (
 	"github.com/dy-platform/user-srv-passport/idl"
 	snowflake "github.com/dy-platform/user-srv-passport/idl/platform/id/srv-snowflake"
 	srv "github.com/dy-platform/user-srv-passport/idl/platform/user/srv-passport"
-	"github.com/dy-platform/user-srv-passport/util/config"
+	"github.com/dy-platform/user-srv-passport/util"
 	"github.com/dy-ss/crypto/password"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
@@ -94,7 +94,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		return nil
 	}
 
-	secret, ok := uconfig.DefaultWeChatOpenConf.Secrets[req.AppID]
+	secret, ok := util.DefaultWeChatOpenConf.Secrets[req.AppID]
 	if !ok {
 		logrus.Warnf("invalid appid")
 		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
@@ -103,7 +103,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 	}
 
 	reqStr := fmt.Sprintf("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		uconfig.DefaultWeChatOpenConf.URL, req.AppID, secret, req.Code)
+		util.DefaultWeChatOpenConf.URL, req.AppID, secret, req.Code)
 	resp1, err := http.Get(reqStr)
 	if err != nil {
 		logrus.Warnf("get %s error. %s", reqStr, err)

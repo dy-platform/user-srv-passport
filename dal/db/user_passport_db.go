@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/sirupsen/logrus"
-	"github.com/dy-platform/user-srv-passport/util/config"
+	"github.com/dy-platform/user-srv-passport/util"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -19,12 +19,12 @@ func Mgo() *mgo.Session {
 
 func Init() {
 	dialInfo := &mgo.DialInfo{
-		Addrs:     uconfig.DefaultMgoConf.Addr,
+		Addrs:     util.DefaultMgoConf.Addr,
 		Direct:    false,
 		Timeout:   time.Second * 3,
-		PoolLimit: uconfig.DefaultMgoConf.PoolLimit,
-		Username:  uconfig.DefaultMgoConf.Username,
-		Password:  uconfig.DefaultMgoConf.Password,
+		PoolLimit: util.DefaultMgoConf.PoolLimit,
+		Username:  util.DefaultMgoConf.Username,
+		Password:  util.DefaultMgoConf.Password,
 	}
 
 	ses, err := mgo.DialWithInfo(dialInfo)
