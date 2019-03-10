@@ -1,5 +1,5 @@
 # This is how we want to name the binary output
-OUTPUT=platform-user-srv-passport
+TARGET=platform-user-srv-passport
 
 # These are the values we want to pass for Version and BuildTime
 GITTAG=`git describe --tags`

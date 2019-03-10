@@ -3,6 +3,8 @@ package util
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/micro/go-config"
+	"os"
+	"strings"
 )
 
 type (
@@ -36,6 +38,12 @@ func Init() {
 	if len(DefaultMgoConf.Addr) == 0 {
 		logrus.Fatalf("invalid mgo addr")
 	}
+	for k, _ := range DefaultMgoConf.Addr {
+		if strings.Index(DefaultMgoConf.Addr[k], "$") == 0 {
+			DefaultMgoConf.Addr[k] = os.Getenv(strings.TrimPrefix(DefaultMgoConf.Addr[k], "$"))
+		}
+	}
+
 
 	err = config.Get("wechatOpenConfig").Scan(&DefaultWeChatOpenConf)
 	if len(DefaultWeChatOpenConf.URL) == 0 {

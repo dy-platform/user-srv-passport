@@ -14,7 +14,7 @@ log:
 
 mongodb:
   addr:
-  - $MONGO_HOST
+    - $MONGO_HOST
   username:
   password:
   poolLimit: 10
