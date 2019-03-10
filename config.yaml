@@ -1,8 +1,8 @@
 registry:
-  address: REGISTRY_HOST
+  address: $REGISTRY_HOST
 
 service:
-  name: user-srv-passport
+  name: platform.user.srv.passport
   version: v1.0.0
   metadata:
     id: "1"
@@ -14,7 +14,7 @@ log:
 
 mongodb:
   addr:
-  - MONGO_HOST
+  - $MONGO_HOST
   username:
   password:
   poolLimit: 10
