@@ -140,11 +140,14 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 	if jsonResp.ErrCode != 0 {
 		logrus.Warnf("request wechat open api return errcode:%d", jsonResp.ErrCode)
 		rsp.BaseResp.Code = int32(base.CODE_FAILED)
+		rsp.BaseResp.Msg = fmt.Sprintf("request wechat open api return errcode:%d", jsonResp.ErrCode)
 		return nil
 	}
 
+	logrus.Debugf("jsonResp:%+v", jsonResp)
+
 	// 检查该openid是否已经注册过
-	u, err := db.GetPassportByWeChatID(jsonResp.UnionID)
+	u, err := db.GetPassportByWeChatID(jsonResp.OpenID)
 	if err != nil {
 		// 没有找到
 		if err == mgo.ErrNotFound {
@@ -155,12 +158,13 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 			if err != nil {
 				logrus.Warnf("platform.id.srv.snowflake GetID error: %v", err)
 				rsp.BaseResp = &base.Resp{Code: int32(base.CODE_SERVICE_EXCEPTION)}
+				rsp.BaseResp.Msg = err.Error()
 				return nil
 			}
 
 			u = &model.UserPassport{
 				UID:       idRsp.IDs[0],
-				WeChatID:  jsonResp.UnionID,
+				WeChatID:  jsonResp.OpenID,
 			}
 			// 插入一条用户通行证信息
 
