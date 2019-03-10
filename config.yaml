@@ -18,3 +18,8 @@ mongodb:
   username:
   password:
   poolLimit: 10
+
+wechatOpenConfig:
+  url: https://api.weixin.qq.com/sns/jscode2session
+  secrets:
+    wxbff041264334daea: 7c25216a083de795817c10d8b696ad76

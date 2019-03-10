@@ -16,7 +16,7 @@ func main() {
 	util.Init()
 
 	// 初始化数据库
-	db.Init()
+	db.InitMgo()
 
 	//TODO 初始化缓存
 	//cache.CacheInit()

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/dy-platform/user-srv-passport/model"
 	"io/ioutil"
 	"net/http"
 
@@ -57,7 +58,17 @@ func (h *Handler) SignUp(ctx context.Context, req *srv.SignUpReq, rsp *srv.SignU
 	}
 
 	// 插入一条用户通行证信息
-	err = db.InsertOneUserPassport(req.DeviceID, idRsp.IDs[0], req.Name, string(passwd), string(salt), mobile, req.Email, "")
+	u := &model.UserPassport{
+		UID:       idRsp.IDs[0],
+		DeviceID:  req.DeviceID,
+		Name:      req.Name,
+		Password:  string(passwd),
+		Salt:      string(salt),
+		Mobile:    mobile,
+		Email:     req.Email,
+		WeChatID:  "",
+	}
+	err = db.InsertUserPassport(u)
 	if err != nil {
 		logrus.Warnf("db.InsertOneUserPassport error:%v", err)
 		rsp.BaseResp = &base.Resp{
@@ -87,13 +98,14 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		Code: int32(base.CODE_OK),
 	}
 
-	if len(req.AppID) == 0 || len(req.Secret) == 0 || len(req.Code) == 0 {
+	if len(req.AppID) == 0 || len(req.Code) == 0 {
 		logrus.Warnf("invalid parameter")
 		rsp.BaseResp.Code = int32(base.CODE_INVALID_PARAMETER)
 		rsp.BaseResp.Msg = "invalid parameter"
 		return nil
 	}
 
+	// 根据appid获取私钥
 	secret, ok := util.DefaultWeChatOpenConf.Secrets[req.AppID]
 	if !ok {
 		logrus.Warnf("invalid appid")
@@ -102,6 +114,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		return nil
 	}
 
+	// 向微信开放接口请求，登陆校验
 	reqStr := fmt.Sprintf("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
 		util.DefaultWeChatOpenConf.URL, req.AppID, secret, req.Code)
 	resp1, err := http.Get(reqStr)
@@ -130,6 +143,7 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 		return nil
 	}
 
+	// 检查该openid是否已经注册过
 	u, err := db.GetPassportByWeChatID(jsonResp.UnionID)
 	if err != nil {
 		// 没有找到
@@ -144,9 +158,13 @@ func (h *Handler) WeChatSignIn(ctx context.Context, req *srv.WeChatSignInReq, rs
 				return nil
 			}
 
-			u.UID = idRsp.IDs[0]
+			u = &model.UserPassport{
+				UID:       idRsp.IDs[0],
+				WeChatID:  jsonResp.UnionID,
+			}
 			// 插入一条用户通行证信息
-			err = db.InsertOneUserPassport(req.DeviceID, idRsp.IDs[0], "", "", "", "", "", jsonResp.UnionID)
+
+			err = db.InsertUserPassport(u)
 			if err != nil {
 				logrus.Warnf("db.InsertOneUserPassport error:%v", err)
 				rsp.BaseResp = &base.Resp{
