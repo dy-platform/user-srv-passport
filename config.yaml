@@ -1,0 +1,20 @@
+registry:
+  address: REGISTRY_HOST
+
+service:
+  name: user-srv-passport
+  version: v1.0.0
+  metadata:
+    id: "1"
+
+log:
+  path: log
+  level: debug
+  fileSize: 1024000
+
+mongodb:
+  addr:
+  - MONGO_HOST
+  username:
+  password:
+  poolLimit: 10

@@ -18,5 +18,5 @@ clean:
 	rm -f ${OUTPUT}
 
 docker:
-	docker build --build-arg HOST=$HOST -t platform-${OUTPUT}:latest
+	docker build --build-arg CONFIG_HOST=$CONFIG_HOST -t platform-${OUTPUT}:latest
 
